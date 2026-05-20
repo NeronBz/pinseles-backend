@@ -21,7 +21,6 @@ const logger = require('../utils/logger');
 const Usuario = require('../models/Usuario');
 const ElementoInventario = require('../models/ElementoInventario');
 const PermisoOperativo = require('../models/PermisoOperativo');
-const Solicitud = require('../models/Solicitud');
 const Fichaje = require('../models/Fichaje');
 
 const reset = process.argv.includes('--reset');
@@ -36,7 +35,6 @@ async function seed() {
       Usuario.deleteMany({}),
       ElementoInventario.deleteMany({}),
       PermisoOperativo.deleteMany({}),
-      Solicitud.deleteMany({}),
       Fichaje.deleteMany({}),
     ]);
   }
@@ -78,21 +76,56 @@ async function seed() {
 
   // ── Inventario ──────────────────────────────────────────────────────────────
   const elementosSemilla = [
-    { codigo: 'EQ-001', descripcion: 'Manguera DN45 20m',           categoria: 'Extinción',   ubicacion: 'Almacén A' },
-    { codigo: 'EQ-002', descripcion: 'Casco de bombero',             categoria: 'EPI',         ubicacion: 'Vestuario',    cantidad: 15 },
-    { codigo: 'EQ-003', descripcion: 'Traje ignífugo talla L',       categoria: 'EPI',         ubicacion: 'Vestuario',    cantidad: 10 },
-    { codigo: 'EQ-004', descripcion: 'Cilindro SCBA 10L',            categoria: 'Respiración', ubicacion: 'Almacén A',    cantidad: 8 },
-    { codigo: 'EQ-005', descripcion: 'Detector gases portátil',      categoria: 'Medición',    ubicacion: 'Taller',       estado: 'MANTENIMIENTO' },
-    { codigo: 'EQ-006', descripcion: 'Extintor CO₂ 5kg',             categoria: 'Extinción',   ubicacion: 'Almacén B',    cantidad: 20 },
-    { codigo: 'EQ-007', descripcion: 'Linterna antideflagrante',     categoria: 'Iluminación', ubicacion: 'Almacén B',    cantidad: 12 },
-    { codigo: 'EQ-008', descripcion: 'Dosímetro personal TLD',       categoria: 'Radiación',   ubicacion: 'Sala control', cantidad: 25 },
+    {
+      codigo: 'EQ-001', descripcion: 'Manguera DN45 20m', categoria: 'Extinción',
+      ubicacion: 'Almacén A', cantidad: 4,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'CORTE_RADIAL', 'LANZA_TERMICA', 'CORTE_SOPLETE', 'DISTENSIONADO', 'OTROS'],
+    },
+    {
+      codigo: 'EQ-002', descripcion: 'Casco de bombero', categoria: 'EPI',
+      ubicacion: 'Vestuario', cantidad: 15,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'CORTE_RADIAL', 'LANZA_TERMICA', 'CORTE_SOPLETE', 'DISTENSIONADO', 'OTROS'],
+    },
+    {
+      codigo: 'EQ-003', descripcion: 'Traje ignífugo talla L', categoria: 'EPI',
+      ubicacion: 'Vestuario', cantidad: 10,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'CORTE_RADIAL', 'LANZA_TERMICA', 'CORTE_SOPLETE'],
+    },
+    {
+      codigo: 'EQ-004', descripcion: 'Cilindro SCBA 10L', categoria: 'Respiración',
+      ubicacion: 'Almacén A', cantidad: 8,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'LANZA_TERMICA', 'CORTE_SOPLETE', 'DISTENSIONADO'],
+    },
+    {
+      codigo: 'EQ-005', descripcion: 'Detector gases portátil', categoria: 'Medición',
+      ubicacion: 'Taller', estado: 'MANTENIMIENTO',
+      tipos_trabajo: ['SOLDADURA_TIG', 'CORTE_SOPLETE', 'LANZA_TERMICA', 'OTROS'],
+    },
+    {
+      codigo: 'EQ-006', descripcion: 'Extintor CO₂ 5kg', categoria: 'Extinción',
+      ubicacion: 'Almacén B', cantidad: 20,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'CORTE_RADIAL', 'LANZA_TERMICA', 'CORTE_SOPLETE'],
+    },
+    {
+      codigo: 'EQ-007', descripcion: 'Linterna antideflagrante', categoria: 'Iluminación',
+      ubicacion: 'Almacén B', cantidad: 12,
+      tipos_trabajo: ['DISTENSIONADO', 'LANZA_TERMICA', 'OTROS'],
+    },
+    {
+      codigo: 'EQ-008', descripcion: 'Dosímetro personal TLD', categoria: 'Radiación',
+      ubicacion: 'Sala control', cantidad: 25,
+      tipos_trabajo: ['SOLDADURA_ELECTRICA', 'SOLDADURA_TIG', 'CORTE_RADIAL', 'OTROS'],
+    },
   ];
 
   for (const data of elementosSemilla) {
-    if (!(await ElementoInventario.findOne({ codigo: data.codigo }))) {
-      await ElementoInventario.create(data);
-      logger.info(`Inventario: ${data.codigo}`);
-    }
+    const { codigo, ...campos } = data;
+    await ElementoInventario.findOneAndUpdate(
+      { codigo },
+      { $set: campos },
+      { upsert: true, new: true }
+    );
+    logger.info(`Inventario actualizado: ${codigo}`);
   }
 
   // ── PTRIs demo ───────────────────────────────────────────────────────────────
