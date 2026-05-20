@@ -1,0 +1,240 @@
+###
+# PIN-SELES (CNA) — Colección de peticiones HTTP de ejemplo
+#
+# Uso: abre este archivo en VS Code con la extensión "REST Client"
+#      (humao.rest-client) y pulsa "Send Request" sobre cada bloque.
+#
+# Alternativa: IntelliJ IDEA / WebStorm ya soporta este formato nativamente.
+###
+
+@host = http://localhost:3000
+@api = {{host}}/api/v1
+
+### ------------------------------------------------------------------
+### 0. HEALTH CHECK
+### ------------------------------------------------------------------
+
+GET {{api}}/health
+
+### ------------------------------------------------------------------
+### 1. LOGIN ADMIN
+### ------------------------------------------------------------------
+
+# @name loginAdmin
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "identificador": "admin@pinseles.local",
+  "password": "Admin123!"
+}
+
+###
+
+@tokenAdmin = {{loginAdmin.response.body.data.token}}
+
+### ------------------------------------------------------------------
+### 2. LOGIN BOMBERO
+### ------------------------------------------------------------------
+
+# @name loginBombero
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{
+  "identificador": "bombero@pinseles.local",
+  "password": "Bombero123!"
+}
+
+###
+
+@tokenBombero = {{loginBombero.response.body.data.token}}
+
+### ------------------------------------------------------------------
+### 3. PERFIL
+### ------------------------------------------------------------------
+
+GET {{api}}/auth/me
+Authorization: Bearer {{tokenAdmin}}
+
+### ------------------------------------------------------------------
+### 4. CREAR USUARIO (solo ADMIN)
+### ------------------------------------------------------------------
+
+POST {{api}}/auth/register
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "nombre": "Nuevo Bombero",
+  "documento": "44444444E",
+  "email": "nuevo@pinseles.local",
+  "password": "Cambiar123!",
+  "telefono": "600000099",
+  "rol": "BOMBERO"
+}
+
+### ------------------------------------------------------------------
+### 5. LISTAR USUARIOS
+### ------------------------------------------------------------------
+
+GET {{api}}/usuarios?rol=BOMBERO&page=1&limit=10
+Authorization: Bearer {{tokenAdmin}}
+
+### ------------------------------------------------------------------
+### 6. PERMISOS OPERATIVOS
+### ------------------------------------------------------------------
+
+### 6.1 Crear permiso (bombero)
+# @name crearPermiso
+POST {{api}}/permisos-operativos
+Authorization: Bearer {{tokenBombero}}
+Content-Type: application/json
+
+{
+  "tipo": "INCENDIO",
+  "titulo": "Permiso para simulacro de incendio",
+  "descripcion": "Simulacro anual en edificio auxiliar",
+  "ubicacion": "Edificio auxiliar, planta 2",
+  "fechaInicio": "2026-05-01T08:00:00Z",
+  "fechaFin": "2026-05-01T12:00:00Z"
+}
+
+###
+
+@permisoId = {{crearPermiso.response.body.data._id}}
+
+### 6.2 Listar todos (admin)
+GET {{api}}/permisos-operativos?estado=PENDIENTE
+Authorization: Bearer {{tokenAdmin}}
+
+### 6.3 Aprobar permiso
+POST {{api}}/permisos-operativos/{{permisoId}}/aprobar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "motivo": "Cumple todos los requisitos de seguridad" }
+
+### 6.4 Revocar permiso (una vez aprobado)
+POST {{api}}/permisos-operativos/{{permisoId}}/revocar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "motivo": "Cambio en las condiciones meteorológicas" }
+
+### ------------------------------------------------------------------
+### 7. FICHAJE
+### ------------------------------------------------------------------
+
+### 7.1 Registrar entrada (bombero)
+POST {{api}}/fichajes/entrada
+Authorization: Bearer {{tokenBombero}}
+Content-Type: application/json
+
+{
+  "ubicacion": "Parque de bomberos - Puerta principal",
+  "coordenadas": [-6.3728, 39.4753],
+  "observaciones": "Inicio de turno normal"
+}
+
+### 7.2 Consultar mi fichaje abierto
+GET {{api}}/fichajes/mi-fichaje-abierto
+Authorization: Bearer {{tokenBombero}}
+
+### 7.3 Registrar salida
+POST {{api}}/fichajes/salida
+Authorization: Bearer {{tokenBombero}}
+Content-Type: application/json
+
+{
+  "ubicacion": "Parque de bomberos - Puerta principal",
+  "coordenadas": [-6.3728, 39.4753]
+}
+
+### 7.4 Listar fichajes (bombero solo ve los suyos)
+GET {{api}}/fichajes?page=1&limit=10
+Authorization: Bearer {{tokenBombero}}
+
+### ------------------------------------------------------------------
+### 8. INVENTARIO
+### ------------------------------------------------------------------
+
+### 8.1 Listar
+GET {{api}}/inventario?estado=DISPONIBLE
+Authorization: Bearer {{tokenBombero}}
+
+### 8.2 Crear elemento (admin)
+# @name crearElemento
+POST {{api}}/inventario
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "codigo": "EQ-099",
+  "descripcion": "Manta ignífuga de prueba",
+  "categoria": "Equipos de extinción",
+  "ubicacion": "Almacén C",
+  "cantidad": 5
+}
+
+###
+
+@elementoId = {{crearElemento.response.body.data._id}}
+
+### 8.3 Cambiar estado a EN_USO
+PATCH {{api}}/inventario/{{elementoId}}/estado
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "estado": "EN_USO" }
+
+### 8.4 Actualizar datos
+PATCH {{api}}/inventario/{{elementoId}}
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "ubicacion": "Almacén D", "observaciones": "Trasladado tras inspección" }
+
+### ------------------------------------------------------------------
+### 9. SOLICITUDES
+### ------------------------------------------------------------------
+
+### 9.1 Crear solicitud (bombero)
+# @name crearSolicitud
+POST {{api}}/solicitudes
+Authorization: Bearer {{tokenBombero}}
+Content-Type: application/json
+
+{
+  "tipo": "EMERGENCIA",
+  "titulo": "Fuga detectada en sala de máquinas",
+  "detalles": "Detector de gases activó alarma en sala de máquinas, sector 3",
+  "ubicacion": "Sala de máquinas, sector 3",
+  "prioridad": "ALTA"
+}
+
+###
+
+@solicitudId = {{crearSolicitud.response.body.data._id}}
+
+### 9.2 Asignar bomberos y recursos (admin)
+# Sustituye los IDs por los reales devueltos en llamadas anteriores
+POST {{api}}/solicitudes/{{solicitudId}}/asignar
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "asignados": [],
+  "inventario": []
+}
+
+### 9.3 Resolver solicitud
+POST {{api}}/solicitudes/{{solicitudId}}/resolver
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "resolucion": "Falsa alarma - detector recalibrado" }
+
+### 9.4 Listar todas
+GET {{api}}/solicitudes?estado=RESUELTA
+Authorization: Bearer {{tokenAdmin}}
