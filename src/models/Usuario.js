@@ -1,15 +1,3 @@
-/**
- * Modelo Usuario.
- *
- * Representa tanto bomberos como administradores.
- * La contraseña se almacena con bcrypt y nunca se devuelve en las queries.
- *
- * Relaciones:
- *  - rol: BOMBERO | ADMIN (campo simple para simplificar; en el diseño original
- *    había una colección Rol con permisos embebidos. Para un TFG con 2 roles
- *    bien definidos, un enum es suficiente y más eficiente).
- */
-
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const config = require('../config/config');
@@ -100,9 +88,6 @@ const usuarioSchema = new mongoose.Schema(
 // Hooks
 // -------------------------------------------------------------------
 
-/**
- * Antes de guardar, si la contraseña ha cambiado, la hasheamos con bcrypt.
- */
 usuarioSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   try {
@@ -118,9 +103,6 @@ usuarioSchema.pre('save', async function (next) {
 // Métodos de instancia
 // -------------------------------------------------------------------
 
-/**
- * Compara una contraseña en claro con el hash almacenado.
- */
 usuarioSchema.methods.compararPassword = function (passwordEnClaro) {
   return bcrypt.compare(passwordEnClaro, this.password);
 };

@@ -1,21 +1,8 @@
-/**
- * Middleware de autenticación (JWT) y autorización (roles).
- *
- * auth          -> exige token válido. Inyecta req.user con { id, rol, nombre }.
- * requireRoles  -> exige que el usuario tenga uno de los roles indicados.
- *
- * En entorno nuclear: tolerancia cero a fallos de autorización.
- */
-
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const AppError = require('../utils/AppError');
 const Usuario = require('../models/Usuario');
 
-/**
- * Verifica que la petición incluya un JWT válido.
- * Valida además que el usuario siga activo en la base de datos.
- */
 async function auth(req, res, next) {
   try {
     const header = req.headers.authorization || '';
@@ -54,11 +41,6 @@ async function auth(req, res, next) {
   }
 }
 
-/**
- * Exige que el usuario autenticado tenga alguno de los roles indicados.
- *
- * Uso:  router.post('/...', auth, requireRoles('ADMIN'), controller)
- */
 function requireRoles(...rolesPermitidos) {
   return (req, res, next) => {
     if (!req.user) {

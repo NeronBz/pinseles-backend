@@ -1,7 +1,3 @@
-/**
- * Rutas de Fichajes.
- */
-
 const express = require('express');
 const { body, param } = require('express-validator');
 
@@ -13,9 +9,6 @@ const router = express.Router();
 
 router.use(auth);
 
-/**
- * POST /fichajes/entrada
- */
 router.post(
   '/entrada',
   [
@@ -30,9 +23,6 @@ router.post(
   controller.registrarEntrada
 );
 
-/**
- * POST /fichajes/salida
- */
 router.post(
   '/salida',
   [
@@ -44,21 +34,10 @@ router.post(
   controller.registrarSalida
 );
 
-/**
- * GET /fichajes/mi-fichaje-abierto
- * IMPORTANTE: esta ruta debe ir ANTES de '/:id' para que Express no la
- * interprete como un id.
- */
 router.get('/mi-fichaje-abierto', controller.miFichajeAbierto);
 
-/**
- * GET /fichajes
- */
 router.get('/', controller.listar);
 
-/**
- * GET /fichajes/:id
- */
 router.get('/:id', [param('id').isMongoId()], validate, controller.obtener);
 
 module.exports = router;

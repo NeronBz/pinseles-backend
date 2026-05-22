@@ -1,10 +1,3 @@
-/**
- * Middleware central de manejo de errores.
- * Transforma cualquier error en una respuesta JSON homogénea.
- *
- * Crítico: no exponer stack traces en producción.
- */
-
 const logger = require('../utils/logger');
 const AppError = require('../utils/AppError');
 const { fail } = require('../utils/responseHelper');

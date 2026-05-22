@@ -1,13 +1,3 @@
-/**
- * Controlador de autenticación.
- *
- * Endpoints:
- *  - POST /auth/register  (solo ADMIN puede crear usuarios)
- *  - POST /auth/login     (cualquiera, genera JWT)
- *  - GET  /auth/me        (perfil del usuario autenticado)
- *  - POST /auth/change-password
- */
-
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
 const AppError = require('../utils/AppError');
@@ -15,9 +5,6 @@ const asyncHandler = require('../utils/asyncHandler');
 const { ok, created } = require('../utils/responseHelper');
 const config = require('../config/config');
 
-/**
- * Genera un JWT firmado para un usuario.
- */
 function firmarToken(usuario) {
   return jwt.sign(
     {
@@ -33,10 +20,6 @@ function firmarToken(usuario) {
   );
 }
 
-/**
- * POST /auth/register
- * Crea un nuevo usuario. Solo accesible por ADMIN.
- */
 exports.register = asyncHandler(async (req, res) => {
   const { nombre, documento, email, password, telefono, rol, fechaIngreso } = req.body;
 
@@ -55,10 +38,6 @@ exports.register = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * POST /auth/login
- * Recibe email/documento + password. Devuelve JWT.
- */
 exports.login = asyncHandler(async (req, res) => {
   const { identificador, password } = req.body;
 
@@ -94,10 +73,6 @@ exports.login = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /auth/me
- * Devuelve el perfil del usuario autenticado.
- */
 exports.me = asyncHandler(async (req, res) => {
   const usuario = await Usuario.findById(req.user.id).select('+photoBase64');
   if (!usuario) {
@@ -106,10 +81,6 @@ exports.me = asyncHandler(async (req, res) => {
   return ok(res, { usuario });
 });
 
-/**
- * POST /auth/fcm-token
- * Registra o actualiza el token FCM del usuario autenticado.
- */
 exports.saveFcmToken = asyncHandler(async (req, res) => {
   const { token } = req.body;
   if (!token) throw new AppError('Token FCM requerido', 400);
@@ -117,10 +88,6 @@ exports.saveFcmToken = asyncHandler(async (req, res) => {
   return ok(res, { mensaje: 'Token FCM registrado' });
 });
 
-/**
- * POST /auth/change-password
- * Cambia la contraseña del usuario autenticado.
- */
 exports.changePassword = asyncHandler(async (req, res) => {
   const { passwordActual, passwordNueva } = req.body;
 

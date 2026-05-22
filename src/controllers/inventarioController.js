@@ -1,24 +1,8 @@
-/**
- * Controlador de Inventario (ElementoInventario).
- *
- * Endpoints:
- *  - GET    /inventario          listar (cualquier autenticado)
- *  - GET    /inventario/:id      obtener
- *  - POST   /inventario          crear (ADMIN)
- *  - PATCH  /inventario/:id      actualizar (ADMIN)
- *  - DELETE /inventario/:id      retirar (ADMIN) - soft delete
- *  - PATCH  /inventario/:id/estado   cambiar estado (ADMIN)
- */
-
 const ElementoInventario = require('../models/ElementoInventario');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 const { ok, created, noContent } = require('../utils/responseHelper');
 
-/**
- * GET /inventario
- * Filtros: ?estado=&categoria=&q=&activo=&page=&limit=
- */
 exports.listar = asyncHandler(async (req, res) => {
   const { estado, categoria, q, activo, tipos_trabajo } = req.query;
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -56,26 +40,17 @@ exports.listar = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /inventario/:id
- */
 exports.obtener = asyncHandler(async (req, res) => {
   const elemento = await ElementoInventario.findById(req.params.id);
   if (!elemento) throw new AppError('Elemento de inventario no encontrado', 404);
   return ok(res, elemento);
 });
 
-/**
- * POST /inventario
- */
 exports.crear = asyncHandler(async (req, res) => {
   const elemento = await ElementoInventario.create(req.body);
   return created(res, elemento);
 });
 
-/**
- * PATCH /inventario/:id
- */
 exports.actualizar = asyncHandler(async (req, res) => {
   const camposPermitidos = [
     'descripcion',
@@ -102,10 +77,6 @@ exports.actualizar = asyncHandler(async (req, res) => {
   return ok(res, elemento);
 });
 
-/**
- * PATCH /inventario/:id/estado
- * Cambia únicamente el estado y actualiza ultimoUso si pasa a EN_USO.
- */
 exports.cambiarEstado = asyncHandler(async (req, res) => {
   const { estado } = req.body;
   if (!ElementoInventario.ESTADOS.includes(estado)) {
@@ -125,10 +96,6 @@ exports.cambiarEstado = asyncHandler(async (req, res) => {
   return ok(res, elemento);
 });
 
-/**
- * DELETE /inventario/:id
- * Soft delete: lo marca como RETIRADO e inactivo.
- */
 exports.retirar = asyncHandler(async (req, res) => {
   const elemento = await ElementoInventario.findByIdAndUpdate(
     req.params.id,

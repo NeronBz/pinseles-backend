@@ -1,11 +1,3 @@
-/**
- * Error personalizado de la aplicación.
- * Permite lanzar errores controlados con código HTTP asociado.
- *
- * Uso:
- *   throw new AppError('Usuario no encontrado', 404);
- */
-
 class AppError extends Error {
   constructor(message, statusCode = 500, details = null) {
     super(message);

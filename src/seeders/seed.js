@@ -1,16 +1,3 @@
-/**
- * Seeder PIN-SELES
- *   npm run seed             → añade datos si no existen
- *   npm run seed -- --reset  → borra todo y recrea
- *
- * Credenciales:
- *   ADMIN      : raul@pinseles.local    / Raul1234!
- *   ADMIN      : mauro@pinseles.local   / Mauro123!
- *   JEFE       : jefe@pinseles.local    / Jefe1234!
- *   BOMBERO    : bombero@pinseles.local / Bombero123!
- *   SOLICITANTE: solicitante@pinseles.local / Solicit123!
- */
-
 require('dotenv').config();
 require('dns').setServers(['8.8.8.8', '8.8.4.4']);
 
@@ -39,7 +26,7 @@ async function seed() {
     ]);
   }
 
-  // ── Usuarios ────────────────────────────────────────────────────────────────
+  // Usuarios
   const semillaUsuarios = [
     // ADMIN (acceso total — Raúl y Mauro)
     { nombre: 'Raúl Blázquez Ibáñez',  documento: '22222222C', email: 'raul@pinseles.local',          password: 'Raul1234!',   telefono: '600000002', rol: 'ADMIN',      cargo: 'Desarrollador / Supervisor' },
@@ -74,7 +61,7 @@ async function seed() {
   const bombero     = usuarios['bombero@pinseles.local'];
   const jefe        = usuarios['jefe@pinseles.local'];
 
-  // ── Inventario ──────────────────────────────────────────────────────────────
+  // Inventario
   const elementosSemilla = [
     {
       codigo: 'EQ-001', descripcion: 'Manguera DN45 20m', categoria: 'Extinción',
@@ -128,7 +115,7 @@ async function seed() {
     logger.info(`Inventario actualizado: ${codigo}`);
   }
 
-  // ── PTRIs demo ───────────────────────────────────────────────────────────────
+  // PTRIs demo
   async function crearSiNoExiste(filtro, datos) {
     if (!(await PermisoOperativo.findOne(filtro))) {
       await PermisoOperativo.create(datos);

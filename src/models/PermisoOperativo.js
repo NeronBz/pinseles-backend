@@ -1,17 +1,3 @@
-/**
- * Modelo PermisoOperativo — PTRI (Permiso de Trabajo con Riesgo de Incendio)
- * CNA Almaraz · Formato GE-CI-02.07a
- *
- * Flujo de estados:
- *   PENDIENTE  (creado por SOLICITANTE)
- *     → EVALUADO   (bombero rellena evaluación PCI)
- *       → AUTORIZADO  (Jefe de Turno / ADMIN firma)
- *         → EN_EJECUCION (bombero implanta — inspección inicial)
- *           → COMPLETADO  (bombero cierra — inspección final)
- *       → RECHAZADO  (Jefe de Turno rechaza)
- *     → ANULADO (ADMIN o SOLICITANTE propietario)
- */
-
 const mongoose = require('mongoose');
 
 const ESTADOS = ['PENDIENTE', 'EVALUADO', 'AUTORIZADO', 'RECHAZADO', 'EN_EJECUCION', 'COMPLETADO', 'ANULADO'];
@@ -54,7 +40,7 @@ const cambioEstadoSchema = new mongoose.Schema(
 
 const permisoOperativoSchema = new mongoose.Schema(
   {
-    // ── Parte A: Solicitud del Trabajo (rellena el SOLICITANTE) ──────────────
+    // Parte A: Solicitud del Trabajo (SOLICITANTE)
     edificio: { type: String, trim: true, maxlength: 100, required: true },
     cota: { type: String, trim: true, maxlength: 50 },
     zona_fuego: { type: String, trim: true, maxlength: 50 },
@@ -80,26 +66,26 @@ const permisoOperativoSchema = new mongoose.Schema(
       index: true,
     },
 
-    // ── Evaluación PCI (rellena el BOMBERO) ──────────────────────────────────
+    // Evaluación PCI (BOMBERO)
     medidas_pci: [{ type: String, enum: MEDIDAS_PCI }],
     medios_pci_zona: { type: String, trim: true, maxlength: 500 },
     precauciones_especiales: { type: String, trim: true, maxlength: 500 },
     evaluado_por: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', default: null },
     fecha_evaluacion: { type: Date, default: null },
 
-    // ── Autorización (firma el ADMIN / Jefe de Turno) ─────────────────────────
+    // Autorización (JEFE / ADMIN)
     autorizado_por: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', default: null },
     fecha_autorizacion: { type: Date, default: null },
     motivo_rechazo: { type: String, trim: true, maxlength: 500 },
 
-    // ── Implantación (BOMBERO — inicio del trabajo) ───────────────────────────
+    // Implantación (BOMBERO)
     extintor: { type: String, trim: true, maxlength: 100 },
     inspeccion_inicial: { type: Boolean, default: false },
     aviso_sala_control_inicio: { type: Boolean, default: false },
     implantado_por: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', default: null },
     fecha_implantacion: { type: Date, default: null },
 
-    // ── Cierre (BOMBERO — fin del trabajo) ────────────────────────────────────
+    // Cierre (BOMBERO)
     inspeccion_final: { type: Boolean, default: false },
     aviso_sala_control_cierre: { type: Boolean, default: false },
     no_se_realiza: { type: Boolean, default: false },

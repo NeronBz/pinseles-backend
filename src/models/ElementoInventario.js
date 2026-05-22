@@ -1,12 +1,3 @@
-/**
- * Modelo ElementoInventario.
- *
- * Representa un equipo o recurso físico del parque de bomberos
- * (mangueras, cascos, trajes, cilindros, detectores, etc.).
- *
- * Estados: DISPONIBLE, EN_USO, MANTENIMIENTO, RETIRADO
- */
-
 const mongoose = require('mongoose');
 
 const ESTADOS = ['DISPONIBLE', 'EN_USO', 'MANTENIMIENTO', 'RETIRADO'];

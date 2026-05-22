@@ -1,7 +1,3 @@
-/**
- * Rutas de usuarios — accesibles por JEFE y ADMIN.
- */
-
 const express = require('express');
 const { body, param } = require('express-validator');
 

@@ -1,7 +1,3 @@
-/**
- * Rutas de autenticación.
- */
-
 const express = require('express');
 const { body } = require('express-validator');
 
@@ -12,10 +8,6 @@ const config = require('../config/config');
 
 const router = express.Router();
 
-/**
- * POST /auth/register
- * Solo ADMIN puede crear nuevos usuarios.
- */
 router.post(
   '/register',
   auth,
@@ -37,9 +29,6 @@ router.post(
   authController.register
 );
 
-/**
- * POST /auth/login
- */
 router.post(
   '/login',
   [
@@ -54,14 +43,8 @@ router.post(
   authController.login
 );
 
-/**
- * GET /auth/me
- */
 router.get('/me', auth, authController.me);
 
-/**
- * POST /auth/fcm-token
- */
 router.post(
   '/fcm-token',
   auth,
@@ -70,9 +53,6 @@ router.post(
   authController.saveFcmToken
 );
 
-/**
- * POST /auth/change-password
- */
 router.post(
   '/change-password',
   auth,

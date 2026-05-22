@@ -1,8 +1,3 @@
-/**
- * Configuración centralizada de la aplicación.
- * Lee de variables de entorno con valores por defecto seguros.
- */
-
 module.exports = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT, 10) || 3000,

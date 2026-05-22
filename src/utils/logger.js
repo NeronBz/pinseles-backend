@@ -1,9 +1,3 @@
-/**
- * Logger básico con niveles.
- * En un entorno de producción real podría sustituirse por winston o pino.
- * Se mantiene sin dependencia externa para simplificar el TFG.
- */
-
 const levels = { error: 0, warn: 1, info: 2, http: 3, debug: 4 };
 const currentLevel = levels[(process.env.LOG_LEVEL_APP || 'info').toLowerCase()] ?? 2;
 

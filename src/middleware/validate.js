@@ -1,8 +1,3 @@
-/**
- * Middleware que consolida los resultados de express-validator.
- * Si hay errores de validación, devuelve un 400 con los detalles.
- */
-
 const { validationResult } = require('express-validator');
 const { fail } = require('../utils/responseHelper');
 

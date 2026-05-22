@@ -1,18 +1,3 @@
-/**
- * Modelo Fichaje.
- *
- * Registra la entrada y salida de un bombero en un turno.
- * Se asocia opcionalmente con elementos de inventario utilizados.
- *
- * Estados: ENTRADA_REGISTRADA, SALIDA_REGISTRADA, INCOMPLETO
- *
- * Consideraciones:
- *  - Un usuario solo debería tener un fichaje abierto simultáneamente
- *    (índice parcial para garantizarlo).
- *  - En modo offline el cliente Android puede registrar entrada local
- *    y sincronizar después; aquí solo modelamos el servidor.
- */
-
 const mongoose = require('mongoose');
 
 const ESTADOS = ['ENTRADA_REGISTRADA', 'SALIDA_REGISTRADA', 'INCOMPLETO'];

@@ -1,8 +1,3 @@
-/**
- * Conexión a MongoDB mediante Mongoose.
- * Incluye gestión de eventos de conexión y reconexión.
- */
-
 const mongoose = require('mongoose');
 const config = require('./config');
 const logger = require('../utils/logger');

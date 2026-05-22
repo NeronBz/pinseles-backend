@@ -1,24 +1,8 @@
-/**
- * Controlador de Fichajes.
- *
- * Endpoints:
- *  - POST /fichajes/entrada    registrar entrada (usuario autenticado)
- *  - POST /fichajes/salida     cerrar el fichaje abierto del usuario autenticado
- *  - GET  /fichajes            listar (ADMIN ve todos, BOMBERO solo los suyos)
- *  - GET  /fichajes/mi-fichaje-abierto  fichaje abierto actual del usuario
- *  - GET  /fichajes/:id        obtener uno
- */
-
 const Fichaje = require('../models/Fichaje');
 const AppError = require('../utils/AppError');
 const asyncHandler = require('../utils/asyncHandler');
 const { ok, created } = require('../utils/responseHelper');
 
-/**
- * POST /fichajes/entrada
- * Crea un fichaje ENTRADA_REGISTRADA. El índice único parcial del modelo
- * evita que un mismo usuario tenga dos fichajes abiertos.
- */
 exports.registrarEntrada = asyncHandler(async (req, res) => {
   const { ubicacion, coordenadas, observaciones } = req.body;
 
@@ -46,10 +30,6 @@ exports.registrarEntrada = asyncHandler(async (req, res) => {
   return created(res, fichaje);
 });
 
-/**
- * POST /fichajes/salida
- * Cierra el fichaje abierto del usuario autenticado.
- */
 exports.registrarSalida = asyncHandler(async (req, res) => {
   const { ubicacion, coordenadas, observaciones } = req.body;
 
@@ -75,10 +55,6 @@ exports.registrarSalida = asyncHandler(async (req, res) => {
   return ok(res, fichaje);
 });
 
-/**
- * GET /fichajes
- * Filtros: ?usuario=&estado=&desde=YYYY-MM-DD&hasta=YYYY-MM-DD
- */
 exports.listar = asyncHandler(async (req, res) => {
   const { usuario, estado, desde, hasta } = req.query;
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
@@ -116,9 +92,6 @@ exports.listar = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * GET /fichajes/mi-fichaje-abierto
- */
 exports.miFichajeAbierto = asyncHandler(async (req, res) => {
   const fichaje = await Fichaje.findOne({
     usuario: req.user.id,
@@ -127,9 +100,6 @@ exports.miFichajeAbierto = asyncHandler(async (req, res) => {
   return ok(res, fichaje);
 });
 
-/**
- * GET /fichajes/:id
- */
 exports.obtener = asyncHandler(async (req, res) => {
   const fichaje = await Fichaje.findById(req.params.id)
     .populate('usuario', 'nombre email documento')

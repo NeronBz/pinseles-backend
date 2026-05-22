@@ -1,12 +1,3 @@
-/**
- * Helper para construir respuestas JSON homogéneas.
- * Todos los endpoints deben usarlo para facilitar el consumo desde la app Android.
- *
- * Estructura estándar:
- *   Éxito:  { success: true, data: ..., meta?: ... }
- *   Error:  { success: false, error: "mensaje", details?: ... }
- */
-
 function ok(res, data, statusCode = 200, meta = null) {
   const payload = { success: true, data };
   if (meta) payload.meta = meta;
